@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Smart Parking System for Mall</title>
+
+<script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #fff5f7; /* soft pink */
+    margin: 0;
+    padding: 20px;
+  }
+
+  /* TITLE */
+  .title {
+    text-align: center;
+    font-size: 32px;
+    font-weight: bold;
+    color: #2f6f4e; /* matcha green */
+    margin-bottom: 15px;
+  }
+
+  /* MAP CONTAINER */
+  .map {
+    position: relative;
+    max-width: 1100px;
+    margin: auto;
+    background-color: #ffffff;
+    border-radius: 22px;
+    padding: 30px 30px 40px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.1);
+  }
+
+  /* LOBBY */
+  .lobby {
+    background-color: #b24a63; /* DARK PINK */
+    color: white;
+    text-align: center;
+    padding: 14px;
+    border-radius: 14px;
+    font-weight: bold;
+    margin-bottom: 35px;
+  }
+
+  /* ENTRANCE LEVEL 1 (LEFT) */
+  .entrance-left {
+    position: absolute;
+    left: -90px;
+    top: 140px;
+    width: 70px;
+    height: 120px;
+    background-color: #b24a63; /* DARK PINK */
+    color: white;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    text-align: center;
+    font-weight: bold;
+    border-radius: 12px;
+    padding: 8px;
+    font-size: 12px;
+  }
+
+  /* ENTRANCE LEVEL 2 (RIGHT) */
+  .entrance-right {
+    position: absolute;
+    right: -100px;
+    top: 310px;
+    width: 90px;
+    height: 120px;
+    background-color: #b24a63; /* DARK PINK */
+    color: white;
+    text-align: center;
+    font-weight: bold;
+    border-radius: 12px;
+    padding: 10px;
+    font-size: 12px;
+  }
+
+  /* LEVEL LABEL */
+  .level-label {
+    text-align: center;
+    font-weight: bold;
+    color: #2f6f4e;
+    margin: 18px 0 8px;
+  }
+
+  /* PARKING */
+  .parking-row {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 35px;
+  }
+
+  .slot {
+    width: 90px;
+    height: 90px;
+    margin: 12px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 18px;
+  }
+
+  .green { background-color: #3fcf7f; }
+  .red { background-color: #f05a5a; }
+
+  /* LEGEND */
+  .legend {
+    text-align: center;
+    margin-top: 25px;
+  }
+
+  .legend span {
+    margin: 0 18px;
+    font-weight: bold;
+  }
+
+  .box {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    margin-right: 6px;
+    vertical-align: middle;
+    border-radius: 4px;
+  }
+</style>
+</head>
+
+<body>
+
+<div class="title">SMART PARKING SYSTEM FOR MALL</div>
+
+<div class="map">
+
+  <!-- ENTRANCES -->
+  <div class="entrance-left">ENTRANCE<br>LEVEL 1</div>
+  <div class="entrance-right">ENTRANCE<br>LEVEL 2</div>
+
+  <!-- LOBBY -->
+  <div class="lobby">LOBBY</div>
+
+  <!-- LEVEL 1 -->
+  <div class="level-label">Level 1</div>
+  <div class="parking-row">
+    <div id="L1-P1" class="slot green">P1</div>
+    <div class="slot green">P2</div>
+    <div class="slot green">P3</div>
+  </div>
+
+  <!-- LEVEL 2 -->
+  <div class="level-label">Level 2</div>
+  <div class="parking-row">
+    <div id="L2-P1" class="slot green">P1</div>
+    <div id="L2-P2" class="slot green">P2</div>
+    <div class="slot green">P3</div>
+  </div>
+
+</div>
+
+<!-- LEGEND -->
+<div class="legend">
+  <span><div class="box green"></div> Available</span>
+  <span><div class="box red"></div> Not Available</span>
+</div>
+
+<script>
+  const client = mqtt.connect("wss://broker.hivemq.com:8884/mqtt");
+
+  client.on("connect", function () {
+    client.subscribe("parking/level1");
+    client.subscribe("parking/level2");
+  });
+
+  client.on("message", function (topic, message) {
+    const data = JSON.parse(message.toString());
+
+    // Sensor 1 → Level 1 P1
+    if (topic === "parking/level1") {
+      updateSlot("L1-P1", data.P1);
+    }
+
+    // Sensor 2 → Level 2 P1
+    // Sensor 3 → Level 2 P2
+    if (topic === "parking/level2") {
+      updateSlot("L2-P1", data.P1);
+      updateSlot("L2-P2", data.P2);
+    }
+  });
+
+  function updateSlot(id, status) {
+    const slot = document.getElementById(id);
+    if (!slot) return;
+    slot.className = "slot " + (status === 1 ? "red" : "green");
+  }
+</script>
+
+</body>
+</html>
