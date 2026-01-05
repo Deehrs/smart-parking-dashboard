@@ -41,31 +41,32 @@
     padding: 14px;
     border-radius: 14px;
     font-weight: bold;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
   }
 
-  /* ROADS */
+  /* SHORT ROAD ARROWS */
   .road {
-    height: 14px;
+    width: 120px;
+    height: 10px;
     background-color: #9e3f55;
-    border-radius: 7px;
-    margin: 10px 0;
+    border-radius: 5px;
+    margin: 10px auto;
     position: relative;
   }
 
   .road::after {
     content: "→";
     position: absolute;
-    right: 10px;
-    top: -6px;
-    font-size: 22px;
-    color: white;
+    right: -18px;
+    top: -8px;
+    font-size: 20px;
+    color: #9e3f55;
     font-weight: bold;
   }
 
   .road.reverse::after {
     content: "←";
-    left: 10px;
+    left: -18px;
     right: auto;
   }
 
@@ -74,14 +75,14 @@
     text-align: center;
     font-weight: bold;
     color: #2f6f4e;
-    margin: 8px 0;
+    margin: 6px 0;
   }
 
   /* PARKING */
   .parking-row {
     display: flex;
     justify-content: center;
-    margin-bottom: 20px;
+    margin-bottom: 18px;
   }
 
   .slot {
@@ -100,25 +101,26 @@
   .green { background-color: #3fcf7f; }
   .red { background-color: #f05a5a; }
 
-  /* ENTRANCE LEVEL 1 */
+  /* ENTRANCE LEVEL 1 (VERTICAL) */
   .entrance-l1 {
     position: absolute;
-    left: 10px;
+    left: 8px;
     top: 140px;
     background-color: #b24a63;
     color: white;
-    padding: 10px;
+    padding: 10px 6px;
     border-radius: 10px;
     font-weight: bold;
     font-size: 12px;
-    width: 90px;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
     text-align: center;
   }
 
   /* YOU ARE HERE */
   .you-are-here {
     position: absolute;
-    left: 115px;
+    left: 60px;
     top: 170px;
     background: white;
     border: 2px solid #b24a63;
@@ -130,18 +132,19 @@
     text-align: center;
   }
 
-  /* ENTRANCE LEVEL 2 */
+  /* ENTRANCE LEVEL 2 (VERTICAL) */
   .entrance-l2 {
     position: absolute;
-    right: 10px;
+    right: 8px;
     top: 260px;
     background-color: #b24a63;
     color: white;
-    padding: 10px;
+    padding: 10px 6px;
     border-radius: 10px;
     font-weight: bold;
     font-size: 12px;
-    width: 110px;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
     text-align: center;
   }
 
