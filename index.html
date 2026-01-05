@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Smart Parking System for Mall</title>
 
 <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
@@ -9,74 +10,63 @@
 <style>
   body {
     font-family: Arial, sans-serif;
-    background-color: #fff5f7; /* soft pink */
+    background-color: #fff5f7;
     margin: 0;
-    padding: 20px;
+    padding: 15px;
   }
 
   /* TITLE */
   .title {
     text-align: center;
-    font-size: 32px;
+    font-size: 28px;
     font-weight: bold;
-    color: #2f6f4e; /* matcha green */
+    color: #2f6f4e;
     margin-bottom: 15px;
   }
 
-  /* MAP CONTAINER */
+  /* MAP */
   .map {
+    background: white;
+    border-radius: 18px;
+    padding: 20px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.12);
     position: relative;
-    max-width: 1100px;
-    margin: auto;
-    background-color: #ffffff;
-    border-radius: 22px;
-    padding: 30px 30px 40px;
-    box-shadow: 0 12px 30px rgba(0,0,0,0.1);
   }
 
   /* LOBBY */
   .lobby {
-    background-color: #b24a63; /* DARK PINK */
+    background-color: #b24a63;
     color: white;
     text-align: center;
     padding: 14px;
     border-radius: 14px;
     font-weight: bold;
-    margin-bottom: 35px;
+    margin-bottom: 20px;
   }
 
-  /* ENTRANCE LEVEL 1 (LEFT) */
-  .entrance-left {
-    position: absolute;
-    left: -90px;
-    top: 140px;
-    width: 70px;
-    height: 120px;
-    background-color: #b24a63; /* DARK PINK */
-    color: white;
-    writing-mode: vertical-rl;
-    text-orientation: mixed;
-    text-align: center;
-    font-weight: bold;
-    border-radius: 12px;
-    padding: 8px;
-    font-size: 12px;
+  /* ROADS */
+  .road {
+    height: 14px;
+    background-color: #9e3f55;
+    border-radius: 7px;
+    margin: 10px 0;
+    position: relative;
   }
 
-  /* ENTRANCE LEVEL 2 (RIGHT) */
-  .entrance-right {
+  .road::after {
+    content: "→";
     position: absolute;
-    right: -100px;
-    top: 310px;
-    width: 90px;
-    height: 120px;
-    background-color: #b24a63; /* DARK PINK */
+    right: 10px;
+    top: -6px;
+    font-size: 22px;
     color: white;
-    text-align: center;
     font-weight: bold;
-    border-radius: 12px;
-    padding: 10px;
-    font-size: 12px;
+  }
+
+  .road.reverse::after {
+    content: "←";
+    left: 10px;
+    right: auto;
   }
 
   /* LEVEL LABEL */
@@ -84,50 +74,91 @@
     text-align: center;
     font-weight: bold;
     color: #2f6f4e;
-    margin: 18px 0 8px;
+    margin: 8px 0;
   }
 
   /* PARKING */
   .parking-row {
     display: flex;
     justify-content: center;
-    margin-bottom: 35px;
+    margin-bottom: 20px;
   }
 
   .slot {
-    width: 90px;
-    height: 90px;
-    margin: 12px;
+    width: 80px;
+    height: 80px;
+    margin: 8px;
     border-radius: 14px;
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
     font-weight: bold;
-    font-size: 18px;
+    font-size: 16px;
   }
 
   .green { background-color: #3fcf7f; }
   .red { background-color: #f05a5a; }
 
+  /* ENTRANCE LEVEL 1 */
+  .entrance-l1 {
+    position: absolute;
+    left: 10px;
+    top: 140px;
+    background-color: #b24a63;
+    color: white;
+    padding: 10px;
+    border-radius: 10px;
+    font-weight: bold;
+    font-size: 12px;
+    width: 90px;
+    text-align: center;
+  }
+
+  /* YOU ARE HERE */
+  .you-are-here {
+    position: absolute;
+    left: 115px;
+    top: 170px;
+    background: white;
+    border: 2px solid #b24a63;
+    padding: 6px;
+    font-size: 11px;
+    font-weight: bold;
+    border-radius: 6px;
+    color: #b24a63;
+    text-align: center;
+  }
+
+  /* ENTRANCE LEVEL 2 */
+  .entrance-l2 {
+    position: absolute;
+    right: 10px;
+    top: 260px;
+    background-color: #b24a63;
+    color: white;
+    padding: 10px;
+    border-radius: 10px;
+    font-weight: bold;
+    font-size: 12px;
+    width: 110px;
+    text-align: center;
+  }
+
   /* LEGEND */
   .legend {
     text-align: center;
-    margin-top: 25px;
-  }
-
-  .legend span {
-    margin: 0 18px;
-    font-weight: bold;
+    margin-top: 15px;
+    font-size: 14px;
   }
 
   .box {
     display: inline-block;
-    width: 18px;
-    height: 18px;
-    margin-right: 6px;
+    width: 14px;
+    height: 14px;
+    margin-right: 4px;
     vertical-align: middle;
-    border-radius: 4px;
+    border-radius: 3px;
   }
 </style>
 </head>
@@ -139,11 +170,15 @@
 <div class="map">
 
   <!-- ENTRANCES -->
-  <div class="entrance-left">ENTRANCE<br>LEVEL 1</div>
-  <div class="entrance-right">ENTRANCE<br>LEVEL 2</div>
+  <div class="entrance-l1">ENTRANCE<br>LEVEL 1</div>
+  <div class="you-are-here">YOU<br>ARE<br>HERE</div>
+  <div class="entrance-l2">ENTRANCE<br>LEVEL 2</div>
 
   <!-- LOBBY -->
   <div class="lobby">LOBBY</div>
+
+  <!-- ROAD LEVEL 1 -->
+  <div class="road"></div>
 
   <!-- LEVEL 1 -->
   <div class="level-label">Level 1</div>
@@ -152,6 +187,9 @@
     <div class="slot green">P2</div>
     <div class="slot green">P3</div>
   </div>
+
+  <!-- ROAD LEVEL 2 -->
+  <div class="road reverse"></div>
 
   <!-- LEVEL 2 -->
   <div class="level-label">Level 2</div>
